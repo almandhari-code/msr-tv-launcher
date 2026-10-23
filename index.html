@@ -296,5 +296,20 @@ document.addEventListener('keydown',onKey,true);
 window.onload=function(){beacon('loaded');window.focus();var l=btns();for(var i=0;i<l.length;i++)l[i].setAttribute('tabindex','0');l[0].focus();};
 setTimeout(function(){btns()[0].focus();},800);
 </script>
+<script>
+/* Fit to TV screen: shrink everything so the whole page fits without scrolling */
+(function(){
+  function fit(){
+    if (window.innerWidth < 700) { document.body.style.zoom = ''; return; }
+    document.body.style.zoom = 1;
+    var h = document.documentElement.scrollHeight, w = document.documentElement.scrollWidth;
+    var z = Math.min(1, window.innerHeight / h, window.innerWidth / w) * 0.98;
+    document.body.style.zoom = z;
+    document.body.style.overflow = 'hidden';
+  }
+  window.addEventListener('load', fit); window.addEventListener('resize', fit);
+  setTimeout(fit, 1500); setTimeout(fit, 5000);
+})();
+</script>
 </body>
 </html>
