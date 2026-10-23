@@ -297,15 +297,21 @@ window.onload=function(){beacon('loaded');window.focus();var l=btns();for(var i=
 setTimeout(function(){btns()[0].focus();},800);
 </script>
 <script>
-/* Fit to TV screen: shrink everything so the whole page fits without scrolling */
+/* Fit to TV screen: scale so content fills the screen above the news bar */
 (function(){
   function fit(){
-    if (window.innerWidth < 700) { document.body.style.zoom = ''; return; }
-    document.body.style.zoom = 1;
-    var h = document.documentElement.scrollHeight, w = document.documentElement.scrollWidth;
-    var z = Math.min(1, window.innerHeight / h, window.innerWidth / w) * 0.98;
-    document.body.style.zoom = z;
-    document.body.style.overflow = 'hidden';
+    var b=document.body;
+    if (window.innerWidth < 700) { b.style.zoom = ''; return; }
+    b.style.zoom = 1;
+    var news=document.getElementById('news'), nh=news?news.getBoundingClientRect().height:0, bottom=0;
+    for (var i=0;i<b.children.length;i++){ var el=b.children[i];
+      if (el===news || el.tagName==='SCRIPT') continue;
+      var cs=getComputedStyle(el); if (cs.position==='fixed' || cs.display==='none') continue;
+      var r=el.getBoundingClientRect(); if (r.height) bottom=Math.max(bottom, r.bottom + window.scrollY); }
+    if (!bottom) return;
+    var z = (window.innerHeight - nh) / (bottom + 24);
+    b.style.zoom = Math.max(0.5, Math.min(z, 2));
+    b.style.overflow = 'hidden';
   }
   window.addEventListener('load', fit); window.addEventListener('resize', fit);
   setTimeout(fit, 1500); setTimeout(fit, 5000);
