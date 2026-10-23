@@ -124,16 +124,13 @@
   <h2>News channels</h2>
   <div class="row" id="news2"></div>
 
-  <h2>TV controls</h2>
-  <div class="row" id="keys"></div>
 
   <div id="status"></div>
   <div id="news"><a class="app" id="ajbtn" href="https://www.aljazeera.net/video/live">&#9654; Al Jazeera News</a><span class="hl" id="hl"></span></div>
 <script>
 // ES5 only (old VIDAA browser)
 var APPS = [
-  {id:'youtube', name:'YouTube', color:'linear-gradient(135deg,#d2452a,#8f2414)'},
-  {id:'home', name:'Home', color:'linear-gradient(135deg,#8a5a34,#5a3518)'}
+  {id:'youtube', name:'YouTube', url:'https://www.youtube.com/tv', color:'linear-gradient(135deg,#d2452a,#8f2414)'}
 ];
 // Official free live streams (plain links so they work from a static page)
 var CHANNELS = [
@@ -249,8 +246,8 @@ var statusEl=$('status');
 function mk(list, host, kind){
   host.innerHTML='';
   for(var i=0;i<list.length;i++)(function(a){
-    var b=document.createElement('button'); b.className='app'; b.style.background=a.color||'rgba(60,30,12,.45)'; b.textContent=a.name;
-    b.onclick=function(){ send(kind, a.id); }; host.appendChild(b);
+    var b=document.createElement(a.url?'a':'button'); b.className='app'; if(a.url) b.href=a.url; b.style.background=a.color||'rgba(60,30,12,.45)'; b.textContent=a.name;
+    if(!a.url) b.onclick=function(){ send(kind, a.id); }; host.appendChild(b);
   })(list[i]);
 }
 function send(kind, id){
@@ -261,10 +258,9 @@ function send(kind, id){
     x.send(JSON.stringify({id:id}));
   }catch(e){}
 }
-xhr('/api/status', function(j){ if(j&&j.message){ statusEl.className=j.ready?'ok':'err'; statusEl.textContent=j.message; statusEl.style.display='block'; } });
+if(location.protocol!=='https:') xhr('/api/status', function(j){ if(j&&j.message){ statusEl.className=j.ready?'ok':'err'; statusEl.textContent=j.message; statusEl.style.display='block'; } });
 
 mk(APPS, $('apps'), 'app');
-mk(KEYS, $('keys'), 'key');
 (function(){ var host=$('news2'); for(var i=0;i<CHANNELS.length;i++){ var c=CHANNELS[i]; var a=document.createElement('a');
   a.className='app'; a.href=c.url; a.style.background=c.color;
   a.innerHTML='<span class="logo'+(c.ar?' ar':'')+'">'+c.name+'</span><span class="sub">'+c.sub+'</span>'; host.appendChild(a); } })();
