@@ -1,0 +1,14 @@
+name: Refresh headlines
+on:
+  schedule: [{cron: "*/30 * * * *"}]
+  workflow_dispatch:
+permissions: {contents: write}
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/headlines.py
+      - run: |
+          git config user.name "headlines-bot"; git config user.email "actions@github.com"
+          git add headlines.json; git diff --cached --quiet || (git commit -m "Refresh headlines" && git push)
